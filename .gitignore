@@ -10,6 +10,14 @@
 *.userosscache
 *.sln.docstates
 
+# JetBrains Rider
+.idea/
+*.sln.iml
+.idea/*
+
+# MacOS
+.DS_Store
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
