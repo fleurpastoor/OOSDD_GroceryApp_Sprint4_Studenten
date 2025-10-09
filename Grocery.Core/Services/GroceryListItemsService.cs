@@ -51,15 +51,29 @@ namespace Grocery.Core.Services
 
         public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
         {
-            int i = 1;
+            Dictionary<int, int> productCount = new Dictionary<int, int>(); // ProductId, Count
             List<GroceryListItem> groceryListItems = _groceriesRepository.GetAll();
-            List<BestSellingProducts> bestSellingProducts = new List<BestSellingProducts>();
-            foreach (GroceryListItem g in groceryListItems.OrderByDescending(g => g.Amount).Take(topX))
+            foreach (GroceryListItem g in groceryListItems) // Count products
             {
-                Product? product = _productRepository.Get(g.ProductId);
+                if (productCount.ContainsKey(g.ProductId)) // If product already exists, increment count
+                {
+                    productCount[g.ProductId] += g.Amount;
+                }
+                else // If product does not exist, add to dictionary
+                {
+                    productCount.Add(g.ProductId, g.Amount);
+                }
+            }
+    
+            int i = 1;
+
+            List<BestSellingProducts> bestSellingProducts = new List<BestSellingProducts>();
+            foreach (KeyValuePair<int, int> kvp in productCount.OrderByDescending(kvp => kvp.Value).Take(topX)) // Select topX kvp with highest count
+            {
+                Product? product = _productRepository.Get(kvp.Key); // Get product from ProductId (kvp.key)
                 if (product == null)
                     continue;
-                bestSellingProducts.Add(new BestSellingProducts(product.Id, product.Name, product.Stock, g.Amount, i++));
+                bestSellingProducts.Add(new BestSellingProducts(product.Id, product.Name, product.Stock, kvp.Value, i++));
             }
             return bestSellingProducts;
         }
