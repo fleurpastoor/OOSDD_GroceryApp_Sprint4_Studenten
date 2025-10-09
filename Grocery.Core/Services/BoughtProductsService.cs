@@ -20,19 +20,19 @@ namespace Grocery.Core.Services
         }
         public List<BoughtProducts> Get(int? productId)
         {
-            List<GroceryListItem> groceryListItems = _groceryListItemsRepository.GetAll().Where(g => g.ProductId == productId).ToList();
-            List<BoughtProducts> boughtProducts = new List<BoughtProducts>();
+            List<GroceryListItem> groceryListItems = _groceryListItemsRepository.GetAll().Where(g => g.ProductId == productId).ToList(); // Get all GroceryListItems with the given ProductId
+            List<BoughtProducts> boughtProducts = new List<BoughtProducts>(); // Client, GroceryList, Product
             
-            foreach (GroceryListItem g in groceryListItems)
+            foreach (GroceryListItem g in groceryListItems) // Fill Client, GroceryList, Product
             {
-                GroceryList? groceryList = _groceryListRepository.Get(g.GroceryListId);
+                GroceryList? groceryList = _groceryListRepository.Get(g.GroceryListId); // Get GroceryList from GroceryListId
                 if (groceryList == null) continue;
-                Client? client = _clientRepository.Get(groceryList.ClientId);
-                Product? product = _productRepository.Get(g.ProductId);
+                Client? client = _clientRepository.Get(groceryList.ClientId); // Get Client from GroceryList.ClientId
+                Product? product = _productRepository.Get(g.ProductId); // Get Product from GroceryListItem.ProductId
 
                 if (product == null || client == null) 
                     continue;
-                boughtProducts.Add(new BoughtProducts(client, groceryList, product)); 
+                boughtProducts.Add(new BoughtProducts(client, groceryList, product)); // Add to list
             }
             
             return boughtProducts;
